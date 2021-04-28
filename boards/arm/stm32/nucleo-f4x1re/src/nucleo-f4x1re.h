@@ -215,6 +215,7 @@
 #define GPIO_FIRE     GPIO_BUTTON_2
 #define GPIO_JUMP     GPIO_BUTTON_3
 
+
 /****************************************************************************
  * Public Data
  ****************************************************************************/
@@ -311,4 +312,16 @@ int board_ajoy_initialize(void);
 int stm32_mcp2515initialize(FAR const char *devpath);
 #endif
 
+/****************************************************************************
+ * Name: stm32_pwm_setup
+ *
+ * Description:
+ *   Initialize PWM and register the PWM device.
+ *
+ ****************************************************************************/
+
+int stm32_pwm_setup(void);
+
+int stm32_hcsr04_initialize(FAR const char *devname);
 #endif /* __BOARDS_ARM_STM32_NUCLEO_F401RE_SRC_NUCLEO_F401RE_H */
+

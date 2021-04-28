@@ -48,7 +48,7 @@
 #include "chip.h"
 #include "arm_arch.h"
 
-#include "stm32_pwm.h"
+#include "stm32_adc.h"
 #include "nucleo-f4x1re.h"
 
 #include <arch/board/board.h>
@@ -62,9 +62,9 @@
 /* The number of ADC channels in the conversion list */
 
 #ifdef CONFIG_ADC_DMA
-#  define ADC1_NCHANNELS 2
+#  define ADC1_NCHANNELS 4
 #else
-#  define ADC1_NCHANNELS 1
+#  define ADC1_NCHANNELS 4
 #endif
 
 /****************************************************************************
@@ -94,8 +94,13 @@ static const uint8_t  g_adc1_chanlist[ADC1_NCHANNELS] = {0};
 static const uint32_t g_adc1_pinlist[ADC1_NCHANNELS]  = {GPIO_ADC1_IN0};
 
 #endif /* CONFIG_ADC_DMA */
-#endif /* CONFIG_AJOYSTICK */
+#else /* CONFIG_AJOYSTICK */
+static const uint8_t  g_adc1_chanlist[ADC1_NCHANNELS] = {0, 9, 10, 11};
 
+/* Configurations of pins used byte each ADC channels */
+
+static const uint32_t g_adc1_pinlist[ADC1_NCHANNELS]  = {GPIO_ADC1_IN0, GPIO_ADC1_IN9, GPIO_ADC1_IN10, GPIO_ADC1_IN11};
+#endif
 /****************************************************************************
  * Public Functions
  ****************************************************************************/

@@ -86,6 +86,8 @@ struct hcsr04_dev_s
   sem_t conv_donesem;
   int time_start_pulse;
   int time_finish_pulse;
+  int delta;
+  volatile bool running;
   volatile bool rising;
   struct pollfd *fds[CONFIG_HCSR04_NPOLLWAITERS];
 };
@@ -114,22 +116,17 @@ static const struct file_operations g_hcsr04ops =
 
 static int hcsr04_read_distance(FAR struct hcsr04_dev_s *priv)
 {
-  int done;
-
-  nxsem_get_value(&priv->conv_donesem, &done);
-
-  if (done == 0)
-    {
-      return (priv->time_finish_pulse - priv->time_start_pulse);
-    }
-  else
-    {
-      return -EAGAIN;
-    }
+  return priv->delta;
 }
 
 static int hcsr04_start_measuring(FAR struct hcsr04_dev_s *priv)
 {
+  if(priv->running) {
+    return 0;
+  }
+
+  priv->running = true;
+  
   /* Configure the interruption */
 
   priv->rising = true;
@@ -258,6 +255,7 @@ static int hcsr04_ioctl(FAR struct file *filep, int cmd, unsigned long arg)
       break;
 
     case SNIOC_READ_RAW_DATA:
+      ret = hcsr04_read_distance(priv);
       break;
 
 #ifdef CONFIG_HCSR04_DEBUG
@@ -417,10 +415,11 @@ static int hcsr04_int_handler(int irq, FAR void *context, FAR void *arg)
       /* Get the clock ticks from the free running timer */
 
       priv->time_finish_pulse = priv->config->get_clock(priv->config);
+      priv->delta = (priv->time_finish_pulse - priv->time_start_pulse);
 
-      /* Disable interruptions */
-
-      priv->config->irq_enable(priv->config, false);
+      priv->rising = true;
+      priv->config->irq_setmode(priv->config, priv->rising);
+      priv->config->irq_enable(priv->config, true);
 
       /* Conversion is done */
 

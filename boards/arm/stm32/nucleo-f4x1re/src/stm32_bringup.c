@@ -60,6 +60,8 @@
 #include "board_qencoder.h"
 #endif
 
+#include "stm32_hcsr04.h"
+
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
@@ -152,6 +154,14 @@ int stm32_bringup(void)
     }
 #endif
 
+  ret = stm32_pwm_setup();
+  if (ret != OK)
+    {
+      syslog(LOG_ERR,
+             "ERROR: Failed to register the pwm driver: %d\n",
+             ret);
+    }
+
 #ifdef CONFIG_SENSORS_QENCODER
   /* Initialize and register the qencoder driver */
 
@@ -177,6 +187,15 @@ int stm32_bringup(void)
       return ret;
     }
 #endif
+
+  ret = board_hcsr04_initialize(0); 
+  if (ret != OK)
+    {
+      syslog(LOG_ERR,
+             "ERROR: Failed to register the encoder driver: %d\n",
+             ret);
+      return ret;
+    }
 
   return ret;
 }

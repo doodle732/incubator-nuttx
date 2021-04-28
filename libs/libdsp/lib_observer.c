@@ -115,7 +115,7 @@ void motor_observer_smo_init(FAR struct motor_observer_smo_s *smo,
  *
  * Description:
  *  One step of the SMO observer.
- *  REFERENCE: http://ww1.microchip.com/downloads/en/AppNotes/01078B.pdf
+ *  REFERENCE: http://ww1.microchip.co:fam/downloads/en/AppNotes/01078B.pdf
  *
  *  Below some theoretical backgrounds about SMO.
  *
